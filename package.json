@@ -1,0 +1,39 @@
+{
+  "name": "salesforce-js-remoting-utils",
+  "version": "1.0.0",
+  "description": "A Utils Package To Simplify creating JS Remoting Action In Salesforce/ Visualforce Pages",
+  "main": "dist/index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --progress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheRemjx01/salesforce-js-remoting-utils.git"
+  },
+  "keywords": [
+    "Salesforce",
+    "Visualforce",
+    "Page",
+    "Javascript",
+    "Remoting",
+    "Apex",
+    "Controller"
+  ],
+  "author": "Nghia Nguyen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheRemjx01/salesforce-js-remoting-utils/issues"
+  },
+  "homepage": "https://github.com/TheRemjx01/salesforce-js-remoting-utils#readme",
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "uglifyjs-webpack-plugin": "^1.1.4",
+    "webpack": "^3.10.0"
+  }
+}

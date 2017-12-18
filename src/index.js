@@ -1,26 +1,46 @@
+function validateRemotingApi(remoteApi) {
+    for(let key in remoteApi) {
+        if (!remoteApi.hasOwnProperty(key)) {
+            return 'Missing Any Api Key is prohibited'
+        }
+    }
+    if (!remoteApi.callback || !remoteApi.callback instanceof Function) {
+        return 'Callback is not instance of function'
+    }
+}
 exports.generateAllApis = function (allRemotingApis) {
     return allRemotingApis.reduce((apis, remoteApi) => {
         // check empty
-        for (let key in remoteApi) {
-        if (!remoteApi.hasOwnProperty(key)) {
-            throw 'Missing Any Api Key is prohibited';
+        const err = validateRemotingApi(remoteApi);
+        if (err) {
+            throw err
         }
-    }
-
-    if (!remoteApi.callback || !remoteApi.callback instanceof Function) {
-        throw 'Callback is not instance of function'
-    }
 
     // check callback is function
+    // const {jsRemoteMethod, sfController, callback, outputMethod} = remoteApi;
+    // const remoteCallName = `${sfController}.${jsRemoteMethod}`;
+    const {outputMethod, outputFunc} = generateApi(remoteApi);
+    apis[outputMethod] = outputFunc;
+    return apis;
+}, {})
+};
+
+exports.generateApi = function(remoteApi) {
+    const err = validateRemotingApi(remoteApi);
+    if (err) {
+        throw err
+    }
     const {jsRemoteMethod, sfController, callback, outputMethod} = remoteApi;
     const remoteCallName = `${sfController}.${jsRemoteMethod}`;
-    apis[outputMethod] = function(allParams) {
+    const outputFunc = function(allParams) {
         const spreadParams = [...arguments];
         Visualforce.remoting.Manager.invokeAction(
             remoteCallName,
             ...spreadParams, callback, {escape: false}
-    );
+        );
     };
-    return apis;
-}, {})
+    return {
+      outputMethod,
+      outputFunc
+    }
 };

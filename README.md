@@ -1,5 +1,8 @@
 # Salesforce Javascript Remoting Utilities
 
+## Updates:
+### Add Angular Remoting Service Utility
+
 ## Features:
 ### Auto generate all javascript remoting methods
 

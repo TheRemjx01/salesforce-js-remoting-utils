@@ -1,57 +1,83 @@
-function validateRemotingApi(remoteApi, isSingleApi) {
-    if(!isSingleApi) {
-        for(let key in remoteApi) {
-            if (!remoteApi.hasOwnProperty(key)) {
-                return 'Missing Any Api Key is prohibited'
-            }
+export class JSRemote {
+    jsRemoteMethod;
+    sfController;
+    handler;
+    constructor(jsRemoteMethod, sfController, handler) {
+        this.jsRemoteMethod = jsRemoteMethod;
+        this.sfController = sfController;
+        this.handler = handler;
+    }
+
+    get api() {
+        const err = this.validateApi();
+        if (err) {
+            throw err;
+        }
+        const remoteCallName = `${this.sfController}.${this.jsRemoteMethod}`;
+        const self = this;
+        return function() {
+            const spreadParams = [...arguments];
+            Visualforce.remoting.Manager.invokeAction(
+                remoteCallName,
+                ...spreadParams, self.handler, {escape: false}
+            );
+        };
+    }
+
+    validateApi() {
+        if (!this.handler || !this.handler instanceof Function) {
+            return 'Callback is not instance of function'
         }
     }
-
-    if (!remoteApi.callback || !remoteApi.callback instanceof Function) {
-        return 'Callback is not instance of function'
-    }
 }
-exports.generateAllApis = function (allRemotingApis) {
-    return allRemotingApis.reduce((apis, remoteApi) => {
-    // check empty
-    const {outputMethod, outputFunc} = generateApiPrivate(remoteApi);
-    apis[outputMethod] = outputFunc;
-    return apis;
-}, {})
-};
 
- function generateApiPrivate(remoteApi) {
-    const err = validateRemotingApi(remoteApi, false);
-    if (err) {
-        throw err
+export class NgJSRemote extends JSRemote {
+    $q;
+    $rootScope;
+    constructor(jsRemoteMethod, sfController, $q, $rootScope) {
+        super(jsRemoteMethod, sfController);
+        this.$q = $q;
+        this.$rootScope = $rootScope;
+
     }
-    const {jsRemoteMethod, sfController, callback, outputMethod} = remoteApi;
-    const remoteCallName = `${sfController}.${jsRemoteMethod}`;
-    const outputFunc = function(allParams) {
-        const spreadParams = [...arguments];
-        Visualforce.remoting.Manager.invokeAction(
-            remoteCallName,
-            ...spreadParams, callback, {escape: false}
-        );
-    };
-    return {
-      outputMethod,
-      outputFunc
+
+    get promiseApi() {
+        let api;
+        const deferred = this.$q.defer();
+        this.handler = (res) => {
+            this.$rootScope.$apply(() => {
+                deferred.resolve(res)
+            })
+        };
+        try {
+            api = this.api;
+        } catch (e) {
+            throw('Can get\'t promise api because of error api')
+        }
+        return function() {
+            api(...arguments);
+            return deferred.promise;
+        }
     }
 }
 
-exports.generateApi= function(remoteApi) {
-    const err = validateRemotingApi(remoteApi, true);
-    if (err) {
-        throw err
+export class VFRemotingService {
+    allApis;
+    static get $inject() {
+        return ['$q', '$rootScope'];
+    } ;
+
+    // inject
+
+    constructor($q, $rootScope) {
+        this.$q = $q;
+        this.$rootScope = $rootScope;
     }
-    const {jsRemoteMethod, sfController, callback} = remoteApi;
-    const remoteCallName = `${sfController}.${jsRemoteMethod}`;
-    return function(allParams) {
-        const spreadParams = [...arguments];
-        Visualforce.remoting.Manager.invokeAction(
-            remoteCallName,
-            ...spreadParams, callback, {escape: false}
-        );
-    };
-};
+
+
+    getNgApi(apiItem) {
+        const {jsRemoteMethod, sfController} = apiItem;
+        const ngRemote = new NgJSRemote(jsRemoteMethod, sfController, this.$q, this.$rootScope);
+        return ngRemote.promiseApi;
+    }
+}

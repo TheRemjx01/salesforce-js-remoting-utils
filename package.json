@@ -1,6 +1,6 @@
 {
   "name": "salesforce-js-remoting-utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A Utils Package To Simplify creating JS Remoting Action In Salesforce/ Visualforce Pages",
   "main": "dist/index",
   "scripts": {

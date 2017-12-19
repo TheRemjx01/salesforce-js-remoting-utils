@@ -61,13 +61,10 @@ export class NgJSRemote extends JSRemote {
     }
 }
 
-export class VFRemotingService {
-    allApis;
+export class NgJSRemoteService {
     static get $inject() {
         return ['$q', '$rootScope'];
     } ;
-
-    // inject
 
     constructor($q, $rootScope) {
         this.$q = $q;

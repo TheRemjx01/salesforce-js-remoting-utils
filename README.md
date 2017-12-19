@@ -5,6 +5,10 @@ Install salesforce-js-remoting-utils from npm:
 
 `npm i salesforce-js-remoting-utils --save`
 
+## From CDN:
+https://unpkg.com/salesforce-js-remoting-utils/dist/index
+
+
 ## Usage:
 ### `NgJSRemoteService` Utility
 Feature: Auto generate Ng Promise Api for jsMethod in `AngularJS` application.

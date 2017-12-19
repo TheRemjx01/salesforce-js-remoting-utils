@@ -1,2 +1,5 @@
 src/
 .idea/
+.gitignore
+.babelrc
+yarn.lock

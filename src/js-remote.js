@@ -1,4 +1,4 @@
-export default class JSRemote {
+export class JSRemote {
     jsRemoteMethod;
     sfController;
     handler;

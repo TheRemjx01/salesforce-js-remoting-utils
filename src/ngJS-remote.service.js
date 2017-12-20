@@ -1,6 +1,6 @@
 import NgJSRemote from "./ngJS-remote";
 
-export default class NgJSRemoteService {
+export class NgJSRemoteService {
     static get $inject() {
         return ['$q', '$rootScope'];
     } ;

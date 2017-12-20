@@ -13,7 +13,8 @@ https://unpkg.com/salesforce-js-remoting-utils/dist/index
 ### `NgJSRemoteService` Utility
 Feature: Auto generate Ng Promise Api for jsMethod in `AngularJS` application.
 
-Usage
+Usage:
+`NodeJS/Webpack + ES-6`
 ```
     // allApis.js
     /** Define all your Apex @RemoteAction */
@@ -64,6 +65,35 @@ Usage
         }
     }
 ```
+Usage: `In Browser, before ES-6`
+
+```
+<script src="https://unpkg.com/salesforce-js-remoting-utils@0.0.6/dist/ngJS-remote.service.js"></script>
+<script>
+    var allApis = {
+                    Hi: {
+                        jsRemoteMethod: 'Hi',
+                        sfController: 'HelloWordCC'
+                    },
+    };
+
+    var app = angular.module('ng-app', []);
+    var NgJSRemoteService = ngJSRemoteService.NgJSRemoteService;
+    app.service('remoteService', NgJSRemoteService);
+    app.controller('demo', ['$scope', 'remoteService', function($scope, remoteService) {
+        $scope.hello = 'Hello World';
+        console.log('$SCOPE HELLO: ', $scope.hello);
+
+        $scope.onHiBtnClick = function() {
+            remoteService.getNgApi(allApis.Hi)().then(function(res){
+                console.log('VF SERVICE RESPONSE: ', res);
+                $scope.hello = res;
+            })
+        }
+    }])
+</script>
+```
+
 
 ### `JSRemote`
 

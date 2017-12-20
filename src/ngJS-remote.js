@@ -1,6 +1,6 @@
 import JSRemote from "./js-remote";
 
-export default class NgJSRemote extends JSRemote {
+export class NgJSRemote extends JSRemote {
     $q;
     $rootScope;
     constructor(jsRemoteMethod, sfController, $q, $rootScope) {

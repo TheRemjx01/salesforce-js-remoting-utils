@@ -65,7 +65,7 @@ Usage:
         }
     }
 ```
-Usage: `In Browser, before ES-6`
+Usage: `In Browser, before ES-6`. 
 
 ```
 <script src="https://unpkg.com/salesforce-js-remoting-utils/dist/ngJS-remote.service.js"></script>
@@ -78,7 +78,7 @@ Usage: `In Browser, before ES-6`
     };
 
     var app = angular.module('ng-app', []);
-    var NgJSRemoteService = ngJSRemoteService.NgJSRemoteService;
+    var NgJSRemoteService = sfRemoteUtils.NgJSRemoteService;
     app.service('remoteService', NgJSRemoteService);
     app.controller('demo', ['$scope', 'remoteService', function($scope, remoteService) {
         $scope.hello = 'Hello World';

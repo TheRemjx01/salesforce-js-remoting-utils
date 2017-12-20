@@ -68,7 +68,7 @@ Usage:
 Usage: `In Browser, before ES-6`
 
 ```
-<script src="https://unpkg.com/salesforce-js-remoting-utils@0.0.7/dist/ngJS-remote.service.js"></script>
+<script src="https://unpkg.com/salesforce-js-remoting-utils/dist/ngJS-remote.service.js"></script>
 <script>
     var allApis = {
                     Hi: {

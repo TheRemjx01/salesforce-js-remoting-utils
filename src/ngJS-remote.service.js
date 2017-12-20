@@ -1,4 +1,4 @@
-import NgJSRemote from "./ngJS-remote";
+import {NgJSRemote} from "./ngJS-remote";
 
 export class NgJSRemoteService {
     static get $inject() {

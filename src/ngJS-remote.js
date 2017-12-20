@@ -1,4 +1,4 @@
-import JSRemote from "./js-remote";
+import { JSRemote } from "./js-remote";
 
 export class NgJSRemote extends JSRemote {
     $q;

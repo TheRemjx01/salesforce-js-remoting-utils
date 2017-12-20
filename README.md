@@ -65,35 +65,121 @@ Usage:
         }
     }
 ```
-Usage: `In Browser, before ES-6`. 
+Usage: In Visualforce page: `In Browser, before ES-6`.
+1. Require `<script type="text/javascript" src="https://unpkg.com/salesforce-js-remoting-utils/dist/sf-remote-utils.js"></script>`
+2. Require `<script type="text/javascript" src="path/to/angular.js"></script>`
+3. Register your controller `<apex:page controller="HelloWordCCDemo">`
+4. Register NgJsRemoteService: `app.service('remoteService', sfRemoteUtils.NgJSRemoteService);`
+5. Inject to your controller: `app.controller('demo', ['$scope', 'remoteService', function($scope, remoteService) `
+6. Declare your `apiName` is object that has 2 attribute : `{jsRemoteMethod: 'methodName',sfController: 'controllerName'},
+`
+7. Get your angular `promiseApi` by call: ` remoteService.getNgApi(allApis.apiName)`
+ 
+ Example:
 
 ```
-<script src="https://unpkg.com/salesforce-js-remoting-utils/dist/ngJS-remote.service.js"></script>
-<script>
-    var allApis = {
-                    Hi: {
-                        jsRemoteMethod: 'Hi',
-                        sfController: 'HelloWordCC'
-                    },
-    };
+<!-- your vf page looks like-->
+<apex:page controller="HelloWordCCDemo">
+    <html>
+        <head>
+            <script type="text/javascript" src="https://unpkg.com/salesforce-js-remoting-utils/dist/sf-remote-utils.js"></script>
+            <script type="text/javascript" src="path/to/angular.js"></script>
+        </head>
+        <body ng-app="ng-app">
+            <div ng-controller="demo">
+                <h1>TEST REMOTING</h1><br/>
+                <h1>{{hello}}</h1><br/>
+                <button type="button" ng-click="onHiBtnClick()">Call Remoting</button>
+                <hr/>
+                <h1>TEST REMOTING WITH PARAMS</h1><br/>
+                <h1>{{hello2}}</h1><br/>
+                <table>
+                    <tr>
+                        <td><label for="userName">Username: </label></td>
+                        <td>
+                            <input name="userName" type="text" ng-model="userName"/><br/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="email">Email: </label>
+                        </td>
+                        <td>
+                            <input type="text" ng-model="email"/><br/>
+                        </td>
+                    </tr>
+                </table>
 
-    var app = angular.module('ng-app', []);
-    var NgJSRemoteService = sfRemoteUtils.NgJSRemoteService;
-    app.service('remoteService', NgJSRemoteService);
-    app.controller('demo', ['$scope', 'remoteService', function($scope, remoteService) {
-        $scope.hello = 'Hello World';
-        console.log('$SCOPE HELLO: ', $scope.hello);
+                <button type="button" ng-click="onHiWithParamsBtnClick()">
+                    Call Remoting With Params
+                </button>
+            </div>
+        </body>
+        <script>
+            var allApis = {
+                Hi: {
+                    jsRemoteMethod: 'Hi',
+                    sfController: 'HelloWordCCDemo'
+                },
+                HiWithParams: {
+                    jsRemoteMethod: 'HiWithParams',
+                    sfController: 'HelloWordCCDemo'
+                }
+            };
+            var app = angular.module('ng-app', []);
+            app.service('remoteService', sfRemoteUtils.NgJSRemoteService);
+            app.controller('demo', ['$scope', 'remoteService', function($scope, remoteService) {
+                $scope.userName = '';
+                $scope.email = '';
+                $scope.hello = 'Hello World';
+                $scope.hello2 = 'No content';
+                console.log('$SCOPE HELLO: ', $scope.hello);
+                // call without params
+                $scope.onHiBtnClick = function() {
+                    remoteService.getNgApi(allApis.Hi)().then(function(res){
+                        console.log('VF SERVICE RESPONSE: ', res);
+                        $scope.hello = res;
+                    })
+                };
+                // call with params
+                $scope.onHiWithParamsBtnClick = function() {
+                    console.log('$SCOPE USER NAME: ', $scope.userName, $scope.email);
+                    const demoRequest = {userName: $scope.userName, email: $scope.email};
+                    remoteService.getNgApi(allApis.HiWithParams)(demoRequest).then(function(res){
+                        console.log('VF SERVICE RESPONSE: ', res);
+                        $scope.hello2 = res;
+                    })
+                };
+            }])
+        </script>
+    </html>
+</apex:page>
+<!-- End vf page -->
 
-        $scope.onHiBtnClick = function() {
-            remoteService.getNgApi(allApis.Hi)().then(function(res){
-                console.log('VF SERVICE RESPONSE: ', res);
-                $scope.hello = res;
-            })
-        }
-    }])
-</script>
+
+// your apex class look like
+public class HelloWordCCDemo {
+	public class HelloWordRequest {
+		public String userName {get;set;}
+		public String email {get;set;}
+	}
+
+	@RemoteAction
+	public static String Hi() {
+		HelloWordRequest req = new HelloWordRequest();
+		req.userName = 'Nghia';
+		req.email = 'nguyen.nghia@mulodo.com';
+		return 'Hello User: ' + req.userName + 'Your email is: ' + req.email;
+	}
+
+	@RemoteAction
+	public static String HiWithParams(HelloWordRequest req) {
+		return 'Hello User: ' + req.userName + 'Your email is: ' + req.email;
+	}
+}
+
 ```
-
+IMPORTANT NOTE: Remember to register controller to VF page or you will caught `Visualforce is undefined`
 
 ### `JSRemote`
 
